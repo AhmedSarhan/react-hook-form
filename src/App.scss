@@ -1,0 +1,41 @@
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  margin: 40px auto;
+  padding: 5px;
+  box-shadow: 0 2px 2px #ccc;
+
+  .form-group {
+    margin: 10px auto;
+    width: 90%;
+
+    .form-control {
+      display: block;
+      margin: 5px 0;
+      width: 100%;
+      height: 20px;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}
+
+
+button {
+  color: #fff;
+  background-color: #130f40;
+  padding: 10px 35px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 5px;
+  border: 0;
+  cursor: pointer;
+}
