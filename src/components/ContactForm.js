@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { defaultValue, defaultValues } from '../utils/helpers';
 const ContactForm = () => {
-	const { register, reset, errors, handleSubmit, getValues } = useForm();
+	const {
+		register,
+		reset,
+		errors,
+		setError,
+		handleSubmit,
+		getValues,
+	} = useForm({
+		mode: 'onTouched',
+		criteriaMode: 'firstError',
+		reValidateMode: 'onBlur',
+		// defaultValues: defaultValues,
+	});
 	const [showPass, setShowPass] = useState(false);
 	const [passType, setPassType] = useState('password');
 
@@ -14,6 +28,7 @@ const ContactForm = () => {
 	}, [showPass]);
 	const registerHandler = (data) => {
 		console.log(data);
+		reset();
 	};
 	return (
 		<>
@@ -28,6 +43,22 @@ const ContactForm = () => {
 							minLength: {
 								value: 2,
 								message: "username shouldn't be less than 2 characters",
+							},
+							validate: {
+								asyncCompareNames: (value) =>
+									axios
+										.get(
+											'https://sarhan-food-menu.firebaseio.com/pizza-menu/-MR0RGzzOrSnojqc_etu.json'
+										)
+										.then((res) => {
+											console.log(res?.data?.name);
+											return (
+												res?.data?.name === value || 'wrong Names Try gain'
+											);
+										})
+										.catch((err) => {
+											console.log(err);
+										}),
 							},
 						})}
 						className="form-control"
@@ -47,10 +78,40 @@ const ContactForm = () => {
 								value: 13,
 								message: "age shouldn't be less than 13",
 							},
+							valueAsNumber: true,
+							// ignored as valueAsNumber omits it
+							setValueAs: (value) => parseInt(value) + 1,
+							// validate only runs after the validation in register
+							validate: {
+								positive: (value) =>
+									parseInt(value) <= 25 || "age can't be greater than 25 ",
+							},
 						})}
 						className="form-control"
 					/>
 					{errors.age && <span className="error">{errors.age?.message}</span>}
+				</div>
+				<div className="form-group">
+					<label htmlFor="date">Date</label>
+					<input
+						type="date"
+						name="date"
+						ref={register({
+							required: 'date is required',
+							min: {
+								value: 13,
+								message: "date shouldn't be less than 13",
+							},
+							// valueAsDate: true,
+							validate: {
+								futureDate: (value) =>
+									new Date(value).getTime() > new Date().getTime() ||
+									"Event can't be from the past",
+							},
+						})}
+						className="form-control"
+					/>
+					{errors.date && <span className="error">{errors.date?.message}</span>}
 				</div>
 				<div className="form-group">
 					<label htmlFor="phone">Phone Number</label>
@@ -97,7 +158,7 @@ const ContactForm = () => {
 							required: 'password is required',
 							minLength: {
 								value: 5,
-								message: "passwords shouldn't be shorter than 8 characters",
+								message: "passwords shouldn't be shorter than 5 characters",
 							},
 						})}
 						className="form-control"
@@ -115,7 +176,7 @@ const ContactForm = () => {
 							required: 'confirmPassword is required',
 							minLength: {
 								value: 5,
-								message: "passwords shouldn't be shorter than 8 characters",
+								message: "passwords shouldn't be shorter than 5 characters",
 							},
 							validate: {
 								checkPasswordConfirmationHandler: (value) => {
