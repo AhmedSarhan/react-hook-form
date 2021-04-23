@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { defaultValue, defaultValues } from '../utils/helpers';
+import { defaultValues } from '../utils/helpers';
 const ContactForm = () => {
 	const {
 		register,
