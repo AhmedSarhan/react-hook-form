@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { defaultValues } from '../utils/helpers';
 const ContactForm = () => {
 	const {
@@ -14,7 +13,7 @@ const ContactForm = () => {
 		mode: 'onTouched',
 		criteriaMode: 'firstError',
 		reValidateMode: 'onBlur',
-		// defaultValues: defaultValues,
+		defaultValues: defaultValues,
 	});
 	const [showPass, setShowPass] = useState(false);
 	const [passType, setPassType] = useState('password');
@@ -46,15 +45,11 @@ const ContactForm = () => {
 							},
 							validate: {
 								asyncCompareNames: (value) =>
-									axios
-										.get(
-											'https://sarhan-food-menu.firebaseio.com/pizza-menu/-MR0RGzzOrSnojqc_etu.json'
-										)
-										.then((res) => {
-											console.log(res?.data?.name);
-											return (
-												res?.data?.name === value || 'wrong Names Try gain'
-											);
+									fetch('https://jsonplaceholder.cypress.io/users/1')
+										.then((response) => response.json())
+										.then((json) => {
+											console.log(json?.name);
+											return json?.name === value || 'wrong Names Try gain';
 										})
 										.catch((err) => {
 											console.log(err);
@@ -98,14 +93,13 @@ const ContactForm = () => {
 						name="date"
 						ref={register({
 							required: 'date is required',
-							min: {
-								value: 13,
-								message: "date shouldn't be less than 13",
-							},
-							// valueAsDate: true,
+							valueAsDate: true,
+							// ignored as valueAsNumber omits it
+							// setValueAs: (value) => parseInt(value) + 1,
+							// validate only runs after the validation in register
 							validate: {
 								futureDate: (value) =>
-									new Date(value).getTime() > new Date().getTime() ||
+									value.getTime() === new Date().getTime() ||
 									"Event can't be from the past",
 							},
 						})}
