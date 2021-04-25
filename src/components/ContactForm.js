@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { defaultValues } from '../utils/helpers';
+import { defaultValues, phonePattern, emailPattern } from '../utils/helpers';
 const ContactForm = () => {
 	const {
 		register,
@@ -99,7 +99,7 @@ const ContactForm = () => {
 							// validate only runs after the validation in register
 							validate: {
 								futureDate: (value) =>
-									value.getTime() === new Date().getTime() ||
+									new Date(value).getTime() > new Date().getTime() ||
 									"Event can't be from the past",
 							},
 						})}
@@ -115,7 +115,7 @@ const ContactForm = () => {
 						ref={register({
 							required: 'phone number is required',
 							pattern: {
-								value: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,9}$/,
+								value: phonePattern,
 								message: 'Please enter a valid phone number',
 							},
 						})}
@@ -133,7 +133,7 @@ const ContactForm = () => {
 						ref={register({
 							required: 'email address is required',
 							pattern: {
-								value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+								value: emailPattern,
 								message: 'Please enter a valid email address',
 							},
 						})}
