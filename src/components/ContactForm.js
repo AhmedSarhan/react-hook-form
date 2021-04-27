@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { defaultValues, phonePattern, emailPattern } from '../utils/helpers';
+import { yupSchema } from '../utils/YupSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
 const ContactForm = () => {
 	const {
 		register,
@@ -14,6 +16,7 @@ const ContactForm = () => {
 		criteriaMode: 'firstError',
 		reValidateMode: 'onBlur',
 		defaultValues: defaultValues,
+		resolver: yupResolver(yupSchema),
 	});
 	const [showPass, setShowPass] = useState(false);
 	const [passType, setPassType] = useState('password');
@@ -37,25 +40,12 @@ const ContactForm = () => {
 					<input
 						type="text"
 						name="username"
-						ref={register({
-							required: 'Username is required',
-							minLength: {
-								value: 2,
-								message: "username shouldn't be less than 2 characters",
-							},
-							validate: {
-								asyncCompareNames: (value) =>
-									fetch('https://jsonplaceholder.cypress.io/users/1')
-										.then((response) => response.json())
-										.then((json) => {
-											console.log(json?.name);
-											return json?.name === value || 'wrong Names Try gain';
-										})
-										.catch((err) => {
-											console.log(err);
-										}),
-							},
-						})}
+						ref={register}
+						// version 7 way of registering input elements
+						// {...register('username', {
+						// 	required: "please Enter a username"
+						// })}
+
 						className="form-control"
 					/>
 					{errors.username && (
@@ -68,19 +58,9 @@ const ContactForm = () => {
 						type="number"
 						name="age"
 						ref={register({
-							required: 'age is required',
-							min: {
-								value: 13,
-								message: "age shouldn't be less than 13",
-							},
 							valueAsNumber: true,
 							// ignored as valueAsNumber omits it
 							setValueAs: (value) => parseInt(value) + 1,
-							// validate only runs after the validation in register
-							validate: {
-								positive: (value) =>
-									parseInt(value) <= 25 || "age can't be greater than 25 ",
-							},
 						})}
 						className="form-control"
 					/>
@@ -92,16 +72,7 @@ const ContactForm = () => {
 						type="date"
 						name="date"
 						ref={register({
-							required: 'date is required',
 							valueAsDate: true,
-							// ignored as valueAsNumber omits it
-							// setValueAs: (value) => parseInt(value) + 1,
-							// validate only runs after the validation in register
-							validate: {
-								futureDate: (value) =>
-									new Date(value).getTime() > new Date().getTime() ||
-									"Event can't be from the past",
-							},
 						})}
 						className="form-control"
 					/>
@@ -112,13 +83,7 @@ const ContactForm = () => {
 					<input
 						type="text"
 						name="phone"
-						ref={register({
-							required: 'phone number is required',
-							pattern: {
-								value: phonePattern,
-								message: 'Please enter a valid phone number',
-							},
-						})}
+						ref={register}
 						className="form-control"
 					/>
 					{errors.phone && (
@@ -130,13 +95,7 @@ const ContactForm = () => {
 					<input
 						type="text"
 						name="email"
-						ref={register({
-							required: 'email address is required',
-							pattern: {
-								value: emailPattern,
-								message: 'Please enter a valid email address',
-							},
-						})}
+						ref={register}
 						className="form-control"
 					/>
 					{errors.email && (
@@ -148,13 +107,7 @@ const ContactForm = () => {
 					<input
 						type={passType}
 						name="password"
-						ref={register({
-							required: 'password is required',
-							minLength: {
-								value: 5,
-								message: "passwords shouldn't be shorter than 5 characters",
-							},
-						})}
+						ref={register}
 						className="form-control"
 					/>
 					{errors.password && (
@@ -166,19 +119,7 @@ const ContactForm = () => {
 					<input
 						type={passType}
 						name="confirmPassword"
-						ref={register({
-							required: 'confirmPassword is required',
-							minLength: {
-								value: 5,
-								message: "passwords shouldn't be shorter than 5 characters",
-							},
-							validate: {
-								checkPasswordConfirmationHandler: (value) => {
-									const { password } = getValues();
-									return password === value || "Passwords don't match";
-								},
-							},
-						})}
+						ref={register}
 						className="form-control"
 					/>
 					{errors.confirmPassword && (
